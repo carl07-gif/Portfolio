@@ -673,18 +673,14 @@ document.addEventListener('DOMContentLoaded', () => {
   })();
 
   // -------------------------------------------------------------
-  // Guaranteed Touch & Click Resume PDF Direct Downloader
+  // Permission-Gated Resume PDF Controller
   // -------------------------------------------------------------
-  window.downloadResumeDirect = function (e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  const APPROVED_ACCESS_KEYS = ['77777', 'CARL77777', 'CARL2026', 'NAVEEN77777', 'NAVEEN2026', 'CARL', 'NAVEEN'];
 
+  window.executeResumeDownload = function () {
     const resumeUrl = '/assets/resume.pdf';
     const fileName = 'Naveen_Carlin_A_Resume.pdf';
 
-    // Instant Blob Fetch & Download (bypasses browser PDF viewer, directly triggers Save/Download)
     fetch(resumeUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Fetch failed');
@@ -714,6 +710,175 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
       });
   };
+
+  window.openResumeAccessModal = function () {
+    const modal = document.getElementById('resumeAccessModal');
+    if (!modal) {
+      window.executeResumeDownload();
+      return;
+    }
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    const input = document.getElementById('resumeAccessKeyInput');
+    const msg = document.getElementById('resumeKeyStatusMsg');
+    if (msg) msg.textContent = '';
+    if (input) {
+      input.value = '';
+      setTimeout(() => input.focus(), 100);
+    }
+  };
+
+  window.closeResumeAccessModal = function () {
+    const modal = document.getElementById('resumeAccessModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  window.downloadResumeDirect = function (e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    // Check if permission already granted in this session
+    if (sessionStorage.getItem('resumeAccessGranted') === 'true') {
+      window.executeResumeDownload();
+    } else {
+      window.openResumeAccessModal();
+    }
+  };
+
+  // Wire up modal elements
+  (function initResumeModalHandlers() {
+    const modal = document.getElementById('resumeAccessModal');
+    const closeBtn = document.getElementById('closeResumeModalBtn');
+    const tabKeyBtn = document.getElementById('tabKeyBtn');
+    const tabReqBtn = document.getElementById('tabReqBtn');
+    const paneKey = document.getElementById('paneKey');
+    const paneReq = document.getElementById('paneReq');
+    const submitKeyBtn = document.getElementById('submitResumeKeyBtn');
+    const keyInput = document.getElementById('resumeAccessKeyInput');
+    const keyMsg = document.getElementById('resumeKeyStatusMsg');
+    const reqNameInput = document.getElementById('reqNameInput');
+    const reqOrgInput = document.getElementById('reqOrgInput');
+    const reqContactInput = document.getElementById('reqContactInput');
+    const reqMsg = document.getElementById('resumeReqStatusMsg');
+    const sendWaBtn = document.getElementById('sendWaReqBtn');
+    const sendEmailBtn = document.getElementById('sendEmailReqBtn');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', window.closeResumeAccessModal);
+    }
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) window.closeResumeAccessModal();
+      });
+    }
+
+    if (tabKeyBtn && tabReqBtn && paneKey && paneReq) {
+      tabKeyBtn.addEventListener('click', () => {
+        tabKeyBtn.classList.add('active');
+        tabReqBtn.classList.remove('active');
+        paneKey.classList.add('active');
+        paneReq.classList.remove('active');
+      });
+      tabReqBtn.addEventListener('click', () => {
+        tabReqBtn.classList.add('active');
+        tabKeyBtn.classList.remove('active');
+        paneReq.classList.add('active');
+        paneKey.classList.remove('active');
+      });
+    }
+
+    function handleKeyValidation() {
+      if (!keyInput || !keyMsg) return;
+      const code = keyInput.value.trim().toUpperCase();
+      if (!code) {
+        keyMsg.className = 'resume-status-msg error';
+        keyMsg.textContent = 'Please enter an authorization code.';
+        return;
+      }
+      if (APPROVED_ACCESS_KEYS.includes(code)) {
+        sessionStorage.setItem('resumeAccessGranted', 'true');
+        keyMsg.className = 'resume-status-msg success';
+        keyMsg.textContent = '✓ Access Confirmed! Downloading resume...';
+        window.executeResumeDownload();
+        setTimeout(() => {
+          window.closeResumeAccessModal();
+        }, 1200);
+      } else {
+        keyMsg.className = 'resume-status-msg error';
+        keyMsg.textContent = 'Invalid access code. Please request permission below.';
+        keyInput.focus();
+      }
+    }
+
+    if (submitKeyBtn) {
+      submitKeyBtn.addEventListener('click', handleKeyValidation);
+    }
+    if (keyInput) {
+      keyInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleKeyValidation();
+        }
+      });
+    }
+
+    if (sendWaBtn) {
+      sendWaBtn.addEventListener('click', () => {
+        const name = reqNameInput ? reqNameInput.value.trim() : '';
+        const org = reqOrgInput ? reqOrgInput.value.trim() : '';
+        const contact = reqContactInput ? reqContactInput.value.trim() : '';
+
+        if (!name) {
+          if (reqMsg) {
+            reqMsg.className = 'resume-status-msg error';
+            reqMsg.textContent = 'Please enter your name.';
+          }
+          if (reqNameInput) reqNameInput.focus();
+          return;
+        }
+
+        const msgText = `Hi Naveen, I am ${name}${org ? ' from ' + org : ''}. I would like to request permission to download your Resume PDF.${contact ? ' My contact is ' + contact + '.' : ''}`;
+        const waUrl = `https://wa.me/917550276890?text=${encodeURIComponent(msgText)}`;
+        window.open(waUrl, '_blank');
+
+        if (reqMsg) {
+          reqMsg.className = 'resume-status-msg success';
+          reqMsg.textContent = '✓ WhatsApp message opened! Naveen will provide you the access key.';
+        }
+      });
+    }
+
+    if (sendEmailBtn) {
+      sendEmailBtn.addEventListener('click', () => {
+        const name = reqNameInput ? reqNameInput.value.trim() : '';
+        const org = reqOrgInput ? reqOrgInput.value.trim() : '';
+        const contact = reqContactInput ? reqContactInput.value.trim() : '';
+
+        if (!name) {
+          if (reqMsg) {
+            reqMsg.className = 'resume-status-msg error';
+            reqMsg.textContent = 'Please enter your name.';
+          }
+          if (reqNameInput) reqNameInput.focus();
+          return;
+        }
+
+        const subject = `Resume Access Request - ${name}${org ? ' (' + org + ')' : ''}`;
+        const body = `Hi Naveen,\n\nI would like to request permission to download your Resume PDF.\n\nName: ${name}\nOrganization: ${org || 'N/A'}\nContact Info: ${contact || 'N/A'}\n\nThank you!`;
+        const mailtoUrl = `mailto:naveencarlin07@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoUrl;
+
+        if (reqMsg) {
+          reqMsg.className = 'resume-status-msg success';
+          reqMsg.textContent = '✓ Email client opened! Send the request to receive your access key.';
+        }
+      });
+    }
+  })();
 
   document.querySelectorAll('.resume-btn, .cta-resume, a[href*="resume.pdf"]').forEach((el) => {
     el.addEventListener('click', window.downloadResumeDirect);

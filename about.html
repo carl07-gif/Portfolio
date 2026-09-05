@@ -8987,14 +8987,11 @@
     })();
 
     // ─────────────────────────────────────────────────────────────
-    // Guaranteed Touch & Click Resume PDF Direct Downloader
+    // Permission-Gated Resume PDF Controller
     // ─────────────────────────────────────────────────────────────
-    window.downloadResumeDirect = function (e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+    const APPROVED_ACCESS_KEYS = ['77777', 'CARL77777', 'CARL2026', 'NAVEEN77777', 'NAVEEN2026', 'CARL', 'NAVEEN'];
 
+    window.executeResumeDownload = function () {
       const resumeUrl = '/assets/resume.pdf';
       const fileName = 'Naveen_Carlin_A_Resume.pdf';
 
@@ -9028,12 +9025,244 @@
         });
     };
 
+    window.openResumeAccessModal = function () {
+      const modal = document.getElementById('resumeAccessModal');
+      if (!modal) {
+        window.executeResumeDownload();
+        return;
+      }
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      const input = document.getElementById('resumeAccessKeyInput');
+      const msg = document.getElementById('resumeKeyStatusMsg');
+      if (msg) msg.textContent = '';
+      if (input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 100);
+      }
+    };
+
+    window.closeResumeAccessModal = function () {
+      const modal = document.getElementById('resumeAccessModal');
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    window.downloadResumeDirect = function (e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (sessionStorage.getItem('resumeAccessGranted') === 'true') {
+        window.executeResumeDownload();
+      } else {
+        window.openResumeAccessModal();
+      }
+    };
+
+    (function initResumeModalHandlers() {
+      const modal = document.getElementById('resumeAccessModal');
+      const closeBtn = document.getElementById('closeResumeModalBtn');
+      const tabKeyBtn = document.getElementById('tabKeyBtn');
+      const tabReqBtn = document.getElementById('tabReqBtn');
+      const paneKey = document.getElementById('paneKey');
+      const paneReq = document.getElementById('paneReq');
+      const submitKeyBtn = document.getElementById('submitResumeKeyBtn');
+      const keyInput = document.getElementById('resumeAccessKeyInput');
+      const keyMsg = document.getElementById('resumeKeyStatusMsg');
+      const reqNameInput = document.getElementById('reqNameInput');
+      const reqOrgInput = document.getElementById('reqOrgInput');
+      const reqContactInput = document.getElementById('reqContactInput');
+      const reqMsg = document.getElementById('resumeReqStatusMsg');
+      const sendWaBtn = document.getElementById('sendWaReqBtn');
+      const sendEmailBtn = document.getElementById('sendEmailReqBtn');
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', window.closeResumeAccessModal);
+      }
+
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) window.closeResumeAccessModal();
+        });
+      }
+
+      if (tabKeyBtn && tabReqBtn && paneKey && paneReq) {
+        tabKeyBtn.addEventListener('click', () => {
+          tabKeyBtn.classList.add('active');
+          tabReqBtn.classList.remove('active');
+          paneKey.classList.add('active');
+          paneReq.classList.remove('active');
+        });
+        tabReqBtn.addEventListener('click', () => {
+          tabReqBtn.classList.add('active');
+          tabKeyBtn.classList.remove('active');
+          paneReq.classList.add('active');
+          paneKey.classList.remove('active');
+        });
+      }
+
+      function handleKeyValidation() {
+        if (!keyInput || !keyMsg) return;
+        const code = keyInput.value.trim().toUpperCase();
+        if (!code) {
+          keyMsg.className = 'resume-status-msg error';
+          keyMsg.textContent = 'Please enter an authorization code.';
+          return;
+        }
+        if (APPROVED_ACCESS_KEYS.includes(code)) {
+          sessionStorage.setItem('resumeAccessGranted', 'true');
+          keyMsg.className = 'resume-status-msg success';
+          keyMsg.textContent = '✓ Access Confirmed! Downloading resume...';
+          window.executeResumeDownload();
+          setTimeout(() => {
+            window.closeResumeAccessModal();
+          }, 1200);
+        } else {
+          keyMsg.className = 'resume-status-msg error';
+          keyMsg.textContent = 'Invalid access code. Please request permission below.';
+          keyInput.focus();
+        }
+      }
+
+      if (submitKeyBtn) {
+        submitKeyBtn.addEventListener('click', handleKeyValidation);
+      }
+      if (keyInput) {
+        keyInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleKeyValidation();
+          }
+        });
+      }
+
+      if (sendWaBtn) {
+        sendWaBtn.addEventListener('click', () => {
+          const name = reqNameInput ? reqNameInput.value.trim() : '';
+          const org = reqOrgInput ? reqOrgInput.value.trim() : '';
+          const contact = reqContactInput ? reqContactInput.value.trim() : '';
+
+          if (!name) {
+            if (reqMsg) {
+              reqMsg.className = 'resume-status-msg error';
+              reqMsg.textContent = 'Please enter your name.';
+            }
+            if (reqNameInput) reqNameInput.focus();
+            return;
+          }
+
+          const msgText = `Hi Naveen, I am ${name}${org ? ' from ' + org : ''}. I would like to request permission to download your Resume PDF.${contact ? ' My contact is ' + contact + '.' : ''}`;
+          const waUrl = `https://wa.me/917550276890?text=${encodeURIComponent(msgText)}`;
+          window.open(waUrl, '_blank');
+
+          if (reqMsg) {
+            reqMsg.className = 'resume-status-msg success';
+            reqMsg.textContent = '✓ WhatsApp message opened! Naveen will provide you the access key.';
+          }
+        });
+      }
+
+      if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', () => {
+          const name = reqNameInput ? reqNameInput.value.trim() : '';
+          const org = reqOrgInput ? reqOrgInput.value.trim() : '';
+          const contact = reqContactInput ? reqContactInput.value.trim() : '';
+
+          if (!name) {
+            if (reqMsg) {
+              reqMsg.className = 'resume-status-msg error';
+              reqMsg.textContent = 'Please enter your name.';
+            }
+            if (reqNameInput) reqNameInput.focus();
+            return;
+          }
+
+          const subject = `Resume Access Request - ${name}${org ? ' (' + org + ')' : ''}`;
+          const body = `Hi Naveen,\n\nI would like to request permission to download your Resume PDF.\n\nName: ${name}\nOrganization: ${org || 'N/A'}\nContact Info: ${contact || 'N/A'}\n\nThank you!`;
+          const mailtoUrl = `mailto:naveencarlin07@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.location.href = mailtoUrl;
+
+          if (reqMsg) {
+            reqMsg.className = 'resume-status-msg success';
+            reqMsg.textContent = '✓ Email client opened! Send the request to receive your access key.';
+          }
+        });
+      }
+    })();
+
     document.querySelectorAll('.resume-btn, .bento-resume-btn, a[href*="resume.pdf"]').forEach((el) => {
       el.addEventListener('click', window.downloadResumeDirect);
       el.addEventListener('touchend', window.downloadResumeDirect, { passive: false });
     });
 
   </script>
+
+  <!-- ── Resume Permission Access Modal ── -->
+  <div class="resume-modal-overlay" id="resumeAccessModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="resume-modal-card">
+      <button class="resume-modal-close" id="closeResumeModalBtn" aria-label="Close dialog">&times;</button>
+      
+      <div class="resume-modal-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Permission Required</span>
+      </div>
+
+      <h3 class="resume-modal-title">Authorized Access Only</h3>
+      <p class="resume-modal-desc">
+        To protect confidential research credentials, patents, and contact details, resume downloads require Naveen's confirmation.
+      </p>
+
+      <div class="resume-modal-tabs">
+        <button class="resume-modal-tab-btn active" id="tabKeyBtn" type="button">Enter Access Key</button>
+        <button class="resume-modal-tab-btn" id="tabReqBtn" type="button">Request Access</button>
+      </div>
+
+      <!-- Tab 1: Enter Access Key -->
+      <div class="resume-tab-pane active" id="paneKey">
+        <div>
+          <div class="resume-field-label">Access Passcode</div>
+          <input type="text" id="resumeAccessKeyInput" class="resume-input" placeholder="Enter code (e.g. 77777 or CARL2026)" autocomplete="off" />
+        </div>
+        <div class="resume-status-msg" id="resumeKeyStatusMsg"></div>
+        <button class="resume-btn-submit" id="submitResumeKeyBtn" type="button">
+          <span>Unlock &amp; Download PDF</span> &rarr;
+        </button>
+      </div>
+
+      <!-- Tab 2: Request Permission -->
+      <div class="resume-tab-pane" id="paneReq">
+        <div>
+          <div class="resume-field-label">Your Name</div>
+          <input type="text" id="reqNameInput" class="resume-input" placeholder="Recruiter / Collaborator Name" />
+        </div>
+        <div>
+          <div class="resume-field-label">Company / Organization</div>
+          <input type="text" id="reqOrgInput" class="resume-input" placeholder="Company, College, or Venture" />
+        </div>
+        <div>
+          <div class="resume-field-label">Email or Phone</div>
+          <input type="text" id="reqContactInput" class="resume-input" placeholder="name@company.com" />
+        </div>
+        <div class="resume-status-msg" id="resumeReqStatusMsg"></div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+          <button class="resume-btn-wa" id="sendWaReqBtn" type="button">
+            <i class="fa-brands fa-whatsapp"></i> Request via WhatsApp (+91 7550276890)
+          </button>
+          <button class="resume-btn-email" id="sendEmailReqBtn" type="button">
+            <i class="fa-regular fa-envelope"></i> Request via Email
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </body>
 
 </html>
