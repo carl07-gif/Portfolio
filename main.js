@@ -654,12 +654,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
+      if (e.touches && e.touches[0]) {
+        touchStartY = e.touches[0].clientY;
+      }
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
       if (triggered) return;
-      if (touchStartY - e.changedTouches[0].clientY > 50) {
+      // Do not trigger page transition if user is touching a link, button, or control
+      if (e.target && e.target.closest && e.target.closest('a, button, input, select, textarea, .resume-btn, .cta-resume')) {
+        return;
+      }
+      if (e.changedTouches && e.changedTouches[0] && (touchStartY - e.changedTouches[0].clientY > 50)) {
         triggered = true;
         window.location.href = 'about.html';
       }
