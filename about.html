@@ -3402,7 +3402,8 @@
     }
 
     .matrix-card:hover::before,
-    .matrix-card:active::before {
+    .matrix-card:active::before,
+    .matrix-card.auto-glow::before {
       opacity: 1;
     }
 
@@ -3413,20 +3414,23 @@
 
     .matrix-card:hover,
     .matrix-card:active,
-    .matrix-card:focus-within {
+    .matrix-card:focus-within,
+    .matrix-card.auto-glow {
       transform: translateY(-4px);
       border-color: #38bdf8 !important;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 35px rgba(56, 189, 248, 0.45), inset 0 0 20px rgba(56, 189, 248, 0.12) !important;
     }
 
     .matrix-card:hover .card-num,
-    .matrix-card:active .card-num {
+    .matrix-card:active .card-num,
+    .matrix-card.auto-glow .card-num {
       color: #38bdf8 !important;
       text-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
     }
 
     .matrix-card:hover .card-pill,
-    .matrix-card:active .card-pill {
+    .matrix-card:active .card-pill,
+    .matrix-card.auto-glow .card-pill {
       border-color: rgba(56, 189, 248, 0.45);
       background: rgba(56, 189, 248, 0.15);
       color: #7dd3fc;
@@ -3434,11 +3438,35 @@
     }
 
     .matrix-card:hover .card-tag,
-    .matrix-card:active .card-tag {
+    .matrix-card:active .card-tag,
+    .matrix-card.auto-glow .card-tag {
       border-color: rgba(56, 189, 248, 0.35);
       color: #bae6fd;
       background: rgba(56, 189, 248, 0.08);
     }
+
+    .skills-matrix-card.auto-glow {
+      border-color: #38bdf8 !important;
+      transform: translateY(-4px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 35px rgba(56, 189, 248, 0.35), inset 0 0 20px rgba(56, 189, 248, 0.1) !important;
+    }
+
+    .proj-card-item.auto-glow {
+      border-color: rgba(56, 189, 248, 0.45) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(56, 189, 248, 0.25) !important;
+      transform: translateY(-4px);
+    }
+
+    .proj-card-item.auto-glow .proj-card-title {
+      color: #38bdf8;
+    }
+
+    .geo-node-card:hover,
+    .geo-node-card.auto-active {
+      border-color: #fbbf24 !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 28px rgba(251, 191, 36, 0.5) !important;
+    }
+
 
     .matrix-card.featured {
       border-color: rgba(255, 255, 255, 0.28);
@@ -8547,6 +8575,92 @@
           }
         }, { passive: true });
       });
+    })();
+    /* ─────────────────────────────────────────────────────────────
+       9B. AUTO GLOW ON SCROLL (No Touch Needed — Center-View Active Glow)
+       ───────────────────────────────────────────────────────────── */
+    (function initAutoGlowOnScroll() {
+      const targetSelectors = [
+        '.matrix-card',
+        '.skills-matrix-card',
+        '.proj-card-item',
+        '.stack-card',
+        '.service-glass-card'
+      ];
+
+      let ticking = false;
+
+      function updateAutoGlow() {
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const centerY = vh / 2;
+
+        targetSelectors.forEach(selector => {
+          const cards = Array.from(document.querySelectorAll(selector));
+          if (cards.length === 0) return;
+
+          let bestCard = null;
+          let minDistance = Infinity;
+
+          cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            // Visible within comfortable mobile reading band (between 18% and 82% of screen height)
+            if (rect.top < vh * 0.82 && rect.bottom > vh * 0.18) {
+              const cardCenter = rect.top + rect.height / 2;
+              const dist = Math.abs(cardCenter - centerY);
+              if (dist < minDistance) {
+                minDistance = dist;
+                bestCard = card;
+              }
+            }
+          });
+
+          cards.forEach(card => {
+            if (card === bestCard) {
+              if (!card.classList.contains('auto-glow')) {
+                card.classList.add('auto-glow');
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x', `${rect.width / 2}px`);
+                card.style.setProperty('--mouse-y', `${rect.height * 0.35}px`);
+              }
+            } else {
+              card.classList.remove('auto-glow');
+            }
+          });
+        });
+
+        // Sync corresponding 3D orbit radar nodes when a matrix-card is active
+        const activeMatrix = document.querySelector('.matrix-card.auto-glow');
+        if (activeMatrix && activeMatrix.id) {
+          const targetNode = document.querySelector(`.geo-node-card[data-target="${activeMatrix.id}"]`);
+          document.querySelectorAll('.geo-node-card').forEach(n => n.classList.remove('auto-active'));
+          if (targetNode) {
+            targetNode.classList.add('auto-active');
+          }
+        } else {
+          document.querySelectorAll('.geo-node-card').forEach(n => n.classList.remove('auto-active'));
+        }
+
+        ticking = false;
+      }
+
+      function handleScroll() {
+        if (!ticking) {
+          requestAnimationFrame(updateAutoGlow);
+          ticking = true;
+        }
+      }
+
+      const vp = document.getElementById('aboutViewport');
+      if (vp) {
+        vp.addEventListener('scroll', handleScroll, { passive: true });
+      }
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', handleScroll, { passive: true });
+
+      // Run on page initialization and after intro finishes
+      setTimeout(updateAutoGlow, 400);
+      setTimeout(updateAutoGlow, 1200);
+      setTimeout(updateAutoGlow, 2500);
     })();
     /* ─────────────────────────────────────────────────────────────
        10. SCROLL SPY — ACTIVE NAV LINK TRACKS CURRENT SECTION
