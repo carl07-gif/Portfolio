@@ -296,9 +296,35 @@ export default defineConfig({
           }
           next();
         });
+      },
+      closeBundle() {
+        const distDir = path.resolve(__dirname, 'dist');
+        const assetsDir = path.resolve(__dirname, 'assets');
+        const fontsDir = path.resolve(__dirname, 'fonts');
+        const distAssetsDir = path.join(distDir, 'assets');
+        const distFontsDir = path.join(distDir, 'fonts');
+
+        if (fs.existsSync(assetsDir)) {
+          if (!fs.existsSync(distAssetsDir)) fs.mkdirSync(distAssetsDir, { recursive: true });
+          fs.cpSync(assetsDir, distAssetsDir, { recursive: true });
+          console.log('[Vite Plugin] Synced assets directory into dist/assets');
+        }
+        if (fs.existsSync(fontsDir)) {
+          if (!fs.existsSync(distFontsDir)) fs.mkdirSync(distFontsDir, { recursive: true });
+          fs.cpSync(fontsDir, distFontsDir, { recursive: true });
+          console.log('[Vite Plugin] Synced fonts directory into dist/fonts');
+        }
       }
     }
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        about: path.resolve(__dirname, 'about.html'),
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -309,3 +335,4 @@ export default defineConfig({
     host: true,
   },
 })
+

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="100%" height="100%">
+  <defs>
+    <filter id="aluShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <path id="aluTamilArc" d="M 30 100 A 130 130 0 0 1 290 100" fill="none"/>
+    <path id="aluEngArc" d="M 45 102 A 120 120 0 0 1 275 102" fill="none"/>
+  </defs>
+
+  <!-- Top Curved Tamil Text: அழகப்பா பல்கலைக்கழகம் -->
+  <text font-family="'Space Grotesk', -apple-system, sans-serif" font-size="16" font-weight="900" fill="#d91a2a" stroke="#ffffff" stroke-width="0.5" letter-spacing="1.5">
+    <textPath href="#aluTamilArc" startOffset="50%" text-anchor="middle">அழகப்பா பல்கலைக்கழகம்</textPath>
+  </text>
+
+  <!-- Main Shield Body -->
+  <g transform="translate(160, 165)" filter="url(#aluShadow)">
+    <!-- Blue Shield Frame -->
+    <path d="M -90 -70 C -90 -70 -60 -85 0 -85 C 60 -85 90 -70 90 -70 L 90 20 C 90 85 0 115 0 115 C 0 115 -90 85 -90 20 Z" 
+          fill="#133b7a" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round"/>
+
+    <!-- English Header: ALAGAPPA UNIVERSITY -->
+    <rect x="-82" y="-68" width="164" height="24" rx="4" fill="#ffffff"/>
+    <text x="0" y="-51" font-family="'Space Grotesk', 'Arial Black', sans-serif" font-size="12.5" font-weight="900" fill="#d91a2a" text-anchor="middle" letter-spacing="1.2">
+      ALAGAPPA UNIVERSITY
+    </text>
+
+    <!-- Center Yellow Ornamental Ring -->
+    <circle cx="0" cy="12" r="54" fill="#fed100" stroke="#ffffff" stroke-width="2.5"/>
+    <!-- Decorative border teeth -->
+    <circle cx="0" cy="12" r="50" fill="none" stroke="#d91a2a" stroke-width="1.8" stroke-dasharray="4 2"/>
+
+    <!-- Inner Red Circle -->
+    <circle cx="0" cy="12" r="44" fill="#cf1020" stroke="#fed100" stroke-width="3"/>
+
+    <!-- White Lotus / Knowledge Lamp Motif -->
+    <g transform="translate(0, 12)">
+      <!-- Outer Lotus Petals -->
+      <path d="M 0 -34 C -10 -22 -10 -12 0 0 C 10 -12 10 -22 0 -34 Z" fill="#ffffff"/>
+      <path d="M 0 34 C -10 22 -10 12 0 0 C 10 12 10 22 0 34 Z" fill="#ffffff"/>
+      <path d="M -34 0 C -22 -10 -12 -10 0 0 C -12 10 -22 10 -34 0 Z" fill="#ffffff"/>
+      <path d="M 34 0 C 22 -10 12 -10 0 0 C 12 10 22 10 34 0 Z" fill="#ffffff"/>
+
+      <!-- Diagonal Petals -->
+      <path d="M -24 -24 C -20 -10 -10 -10 0 0 C -10 -20 -10 -20 -24 -24 Z" fill="#ffffff"/>
+      <path d="M 24 -24 C 20 -10 10 -10 0 0 C 10 -20 10 -20 24 -24 Z" fill="#ffffff"/>
+      <path d="M -24 24 C -20 10 -10 10 0 0 C -10 20 -10 20 -24 24 Z" fill="#ffffff"/>
+      <path d="M 24 24 C 20 10 10 10 0 0 C 10 20 10 20 24 24 Z" fill="#ffffff"/>
+
+      <!-- Center Diya Flame Core -->
+      <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cf1020" stroke-width="2"/>
+      <circle cx="0" cy="0" r="8" fill="#cf1020"/>
+      <circle cx="0" cy="0" r="4" fill="#fed100"/>
+    </g>
+
+    <!-- Bottom Ribbon Banner with Motto -->
+    <!-- Red ribbon tips -->
+    <polygon points="-125,75 -105,60 -105,95 -125,85 -118,75" fill="#cf1020"/>
+    <polygon points="125,75 105,60 105,95 125,85 118,75" fill="#cf1020"/>
+
+    <!-- Blue curved motto ribbon -->
+    <path d="M -110 75 Q 0 105 110 75 L 115 95 Q 0 128 -115 95 Z" fill="#133b7a" stroke="#fed100" stroke-width="2.5"/>
+    <text x="0" y="94" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">
+      செயலிற் செம்மை  EXCELLENCE IN ACTION
+    </text>
+  </g>
+</svg>
