@@ -671,4 +671,52 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
   })();
+
+  // -------------------------------------------------------------
+  // Guaranteed Touch & Click Resume PDF Direct Downloader
+  // -------------------------------------------------------------
+  window.downloadResumeDirect = function (e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const resumeUrl = '/assets/resume.pdf';
+    const fileName = 'Naveen_Carlin_A_Resume.pdf';
+
+    // Instant Blob Fetch & Download (bypasses browser PDF viewer, directly triggers Save/Download)
+    fetch(resumeUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error('Fetch failed');
+        return res.blob();
+      })
+      .then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = blobUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          window.URL.revokeObjectURL(blobUrl);
+          if (link.parentNode) link.parentNode.removeChild(link);
+        }, 1500);
+      })
+      .catch(() => {
+        const fallback = document.createElement('a');
+        fallback.href = resumeUrl;
+        fallback.download = fileName;
+        document.body.appendChild(fallback);
+        fallback.click();
+        setTimeout(() => {
+          if (fallback.parentNode) fallback.parentNode.removeChild(fallback);
+        }, 1000);
+      });
+  };
+
+  document.querySelectorAll('.resume-btn, .cta-resume, a[href*="resume.pdf"]').forEach((el) => {
+    el.addEventListener('click', window.downloadResumeDirect);
+    el.addEventListener('touchend', window.downloadResumeDirect, { passive: false });
+  });
 });

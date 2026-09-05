@@ -5240,7 +5240,7 @@
 
       <!-- Right Actions -->
       <div class="header-actions">
-        <a href="/assets/resume.pdf" class="resume-btn" download="Naveen_Carlin_A_Resume.pdf" target="_blank" rel="noopener noreferrer">
+        <a href="/assets/resume.pdf" class="resume-btn" download="Naveen_Carlin_A_Resume.pdf" onclick="window.downloadResumeDirect && window.downloadResumeDirect(event)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -5272,7 +5272,7 @@
       <a href="#matrix" class="mobile-nav-link">Awards</a>
       <a href="#services" class="mobile-nav-link">Services</a>
       <a href="#contact" class="mobile-nav-link">Contact</a>
-      <a href="/assets/resume.pdf" class="mobile-nav-link" download="Naveen_Carlin_A_Resume.pdf" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; font-weight: 700;">&darr; Resume (Download PDF)</a>
+      <a href="/assets/resume.pdf" class="mobile-nav-link" download="Naveen_Carlin_A_Resume.pdf" onclick="window.downloadResumeDirect && window.downloadResumeDirect(event)" style="color: #38bdf8; font-weight: 700;">&darr; Resume (Download PDF)</a>
     </nav>
   </div>
 
@@ -5562,7 +5562,7 @@
 
             </div>
 
-            <a href="/assets/resume.pdf" download="Naveen_Carlin_A_Resume.pdf" target="_blank" rel="noopener noreferrer" class="bento-resume-btn">
+            <a href="/assets/resume.pdf" download="Naveen_Carlin_A_Resume.pdf" onclick="window.downloadResumeDirect && window.downloadResumeDirect(event)" class="bento-resume-btn">
               <span>&darr;</span> Download Complete Resume <span>&rarr;</span>
             </a>
           </div>
@@ -8985,6 +8985,53 @@
         if (canvas) canvas.style.display = 'none';
       }
     })();
+
+    // ─────────────────────────────────────────────────────────────
+    // Guaranteed Touch & Click Resume PDF Direct Downloader
+    // ─────────────────────────────────────────────────────────────
+    window.downloadResumeDirect = function (e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      const resumeUrl = '/assets/resume.pdf';
+      const fileName = 'Naveen_Carlin_A_Resume.pdf';
+
+      fetch(resumeUrl)
+        .then((res) => {
+          if (!res.ok) throw new Error('Fetch failed');
+          return res.blob();
+        })
+        .then((blob) => {
+          const blobUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.style.display = 'none';
+          link.href = blobUrl;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => {
+            window.URL.revokeObjectURL(blobUrl);
+            if (link.parentNode) link.parentNode.removeChild(link);
+          }, 1500);
+        })
+        .catch(() => {
+          const fallback = document.createElement('a');
+          fallback.href = resumeUrl;
+          fallback.download = fileName;
+          document.body.appendChild(fallback);
+          fallback.click();
+          setTimeout(() => {
+            if (fallback.parentNode) fallback.parentNode.removeChild(fallback);
+          }, 1000);
+        });
+    };
+
+    document.querySelectorAll('.resume-btn, .bento-resume-btn, a[href*="resume.pdf"]').forEach((el) => {
+      el.addEventListener('click', window.downloadResumeDirect);
+      el.addEventListener('touchend', window.downloadResumeDirect, { passive: false });
+    });
 
   </script>
 </body>

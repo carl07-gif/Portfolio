@@ -19,11 +19,11 @@
             },
             {
               "key": "Content-Type",
-              "value": "application/pdf"
+              "value": "application/octet-stream"
             },
             {
               "key": "Cache-Control",
-              "value": "public, max-age=3600"
+              "value": "no-cache, no-store, must-revalidate"
             }
           ]
         }
@@ -48,11 +48,11 @@
             },
             {
               "key": "Content-Type",
-              "value": "application/pdf"
+              "value": "application/octet-stream"
             },
             {
               "key": "Cache-Control",
-              "value": "public, max-age=3600"
+              "value": "no-cache, no-store, must-revalidate"
             }
           ]
         }
