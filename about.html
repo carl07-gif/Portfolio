@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/" />
   <title>About — Naveen Carlin A | AI Engineer & Full Stack Developer</title>
   <meta name="description"
     content="Research Intern at NIT Trichy & Alagappa University, Full Stack Developer Intern at VDart, Award-Winning Developer building scalable AI systems." />
@@ -3885,13 +3886,15 @@
       pointer-events: none;
     }
 
-    .service-glass-card:hover::before {
+    .service-glass-card:hover::before,
+    .service-glass-card.auto-glow::before {
       opacity: 1;
     }
 
-    .service-glass-card:hover {
-      border-color: rgba(56, 189, 248, 0.45);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 28px rgba(56, 189, 248, 0.25);
+    .service-glass-card:hover,
+    .service-glass-card.auto-glow {
+      border-color: rgba(56, 189, 248, 0.6) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 32px rgba(56, 189, 248, 0.35) !important;
       transform: translateY(-4px);
     }
 
@@ -3978,7 +3981,8 @@
       transition: color 0.3s ease, transform 0.3s ease;
     }
 
-    .service-glass-card:hover .service-corner-arrow {
+    .service-glass-card:hover .service-corner-arrow,
+    .service-glass-card.auto-glow .service-corner-arrow {
       color: #38bdf8;
       transform: translate(2px, -2px);
     }
@@ -4042,7 +4046,14 @@
       gap: 24px;
       backdrop-filter: blur(16px);
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .testimonial-quote-box:hover,
+    .testimonial-quote-box.auto-glow {
+      border-color: rgba(56, 189, 248, 0.6) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 32px rgba(56, 189, 248, 0.3) !important;
+      transform: translateY(-3px);
     }
 
     .quote-mark-icon {
@@ -4069,17 +4080,24 @@
     }
 
     .author-avatar-wrap {
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       overflow: hidden;
       border: 2px solid rgba(56, 189, 248, 0.5);
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
-      background: #ffffff;
+      background: #0d1322;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .author-avatar-wrap.is-logo-wrap {
+      background: #ffffff !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.5) !important;
     }
 
     .author-avatar-img {
@@ -4091,8 +4109,11 @@
     }
 
     .author-avatar-img.is-logo {
+      width: 86% !important;
+      height: 86% !important;
       object-fit: contain !important;
-      padding: 7px !important;
+      padding: 2px !important;
+      background: #ffffff !important;
     }
 
     .author-name {
@@ -5201,7 +5222,7 @@
       <!-- Logo + Name -->
       <a href="index.html" class="logo-name-btn" aria-label="Back to Home">
         <div class="logo-icon-wrap">
-          <img src="assets/logo.svg" alt="Logo" width="28" height="28" class="logo-img" />
+          <img src="/assets/logo.svg" alt="Logo" width="28" height="28" class="logo-img" />
         </div>
         <span class="logo-name-text">Naveen</span>
       </a>
@@ -7277,7 +7298,7 @@
           <div class="footer-brand-col">
             <div class="footer-logo-row">
               <div class="logo-icon-wrap">
-                <img src="assets/logo.svg" alt="Logo" width="28" height="28" class="logo-img" />
+                <img src="/assets/logo.svg" alt="Logo" width="28" height="28" class="logo-img" />
               </div>
               <span class="footer-brand-name">Naveen Carlin A</span>
             </div>
@@ -8464,6 +8485,9 @@
             authorAvatar.alt = data.name;
             const isLogo = data.avatar.includes('logo') || data.avatar.includes('krce') || data.avatar.includes('vdart');
             authorAvatar.classList.toggle('is-logo', isLogo);
+            if (authorAvatar.parentElement) {
+              authorAvatar.parentElement.classList.toggle('is-logo-wrap', isLogo);
+            }
           }
           if (authorName) authorName.textContent = data.name;
           if (authorRole) authorRole.textContent = data.role;
@@ -8585,7 +8609,8 @@
         '.skills-matrix-card',
         '.proj-card-item',
         '.stack-card',
-        '.service-glass-card'
+        '.service-glass-card',
+        '.testimonial-quote-box'
       ];
 
       let ticking = false;
