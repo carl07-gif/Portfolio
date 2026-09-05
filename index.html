@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intelligence Designed To Evolve</title>
+  <meta name="description" content="Build applications that reason, adapt and collaborate using a modular AI platform designed for production." />
+
+  <!-- Space Grotesk (Futuristic Geometric Display) & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- BubbledotICG-FinePos (retro dot-matrix display) -->
+  <link href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos" rel="stylesheet" />
+
+  <!-- Font Awesome 6.5.2 -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── Full-bleed background video & 3D Interactive Wave & Star Canvases ── -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg-3d-wrapper" id="bg3dWrapper">
+      <video class="bg-video" autoplay muted loop playsinline>
+        <source
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <div class="bg-color-grade"></div>
+      <div class="bg-cosmic-fade"></div>
+      <canvas id="galaxyCanvas" class="galaxy-canvas"></canvas>
+      <canvas id="binaryStreamCanvas" class="binary-stream-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- ── Page layout ── -->
+  <div class="page">
+
+    <!-- 1. Header -->
+    <header class="header">
+
+      <!-- Logo + Name -->
+      <a href="#" class="logo-name-btn" aria-label="Home">
+        <div class="logo-icon-wrap">
+          <img src="assets/logo.svg" alt="Logo" width="30" height="30" class="logo-img" />
+        </div>
+        <span class="logo-name-text">Naveen</span>
+      </a>
+
+      <!-- Desktop Nav (spread center) -->
+      <nav class="nav-center" aria-label="Main navigation">
+        <a href="about.html" class="nav-link">About</a>
+        <a href="#" class="nav-link">Skills</a>
+        <a href="#" class="nav-link">Experience</a>
+        <a href="#" class="nav-link">Projects</a>
+        <a href="#" class="nav-link">Awards</a>
+        <a href="#" class="nav-link">Services</a>
+        <a href="#" class="nav-link">Contact</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="header-actions">
+        <a href="#" class="resume-btn" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Resume
+        </a>
+        <a href="about.html" class="hireme-btn">Hire me &rarr;</a>
+      </div>
+
+      <!-- Mobile burger -->
+      <button class="burger-btn" id="burgerBtn" aria-label="Open menu" aria-expanded="false">
+        <span class="burger-bar"></span>
+        <span class="burger-bar"></span>
+        <span class="burger-bar"></span>
+      </button>
+
+    </header>
+
+    <!-- Mobile overlay + sheet -->
+    <div class="mobile-overlay" id="mobileOverlay" hidden></div>
+    <div class="mobile-menu" id="mobileMenu" hidden aria-hidden="true" role="dialog" aria-label="Navigation menu">
+      <nav class="mobile-nav">
+        <a href="about.html" class="mobile-nav-link">About</a>
+        <a href="about.html#skills" class="mobile-nav-link">Skills</a>
+        <a href="about.html#experience" class="mobile-nav-link">Experience</a>
+        <a href="about.html#projects" class="mobile-nav-link">Projects</a>
+        <a href="about.html#matrix" class="mobile-nav-link">Awards</a>
+        <a href="about.html#services" class="mobile-nav-link">Services</a>
+        <a href="about.html#contact" class="mobile-nav-link">Contact</a>
+        <a href="about.html" class="mobile-signin-btn" style="background: linear-gradient(135deg, #a855f7 0%, #f59e0b 100%);">Hire me &rarr;</a>
+      </nav>
+    </div>
+
+    <!-- 2. Hero -->
+    <main class="hero">
+
+      <!-- Social / Trust row -->
+      <div class="trust-row anim" style="--d: 0.05s;">
+        <div class="trust-avatars">
+          <a href="https://www.instagram.com/__.carl.07__/" target="_blank" rel="noopener noreferrer" class="avatar-ring a1" aria-label="Instagram">
+            <div class="avatar-inner">
+              <i class="fa-brands fa-instagram"></i>
+            </div>
+          </a>
+          <a href="https://www.linkedin.com/in/naveen-carlin-a-b66317411" target="_blank" rel="noopener noreferrer" class="avatar-ring a2" aria-label="LinkedIn">
+            <div class="avatar-inner">
+              <i class="fa-brands fa-linkedin-in"></i>
+            </div>
+          </a>
+          <a href="https://github.com/carl07-gif" target="_blank" rel="noopener noreferrer" class="avatar-ring a3" aria-label="GitHub">
+            <div class="avatar-inner">
+              <i class="fa-brands fa-github"></i>
+            </div>
+          </a>
+        </div>
+        <a href="https://www.linkedin.com/in/naveen-carlin-a-b66317411" target="_blank" rel="noopener noreferrer" class="trust-pill" aria-label="Connect with me on LinkedIn">
+          <span>Connect with me</span>
+        </a>
+      </div>
+
+      <!-- Headline -->
+      <div class="headline">
+        <span class="headline-line line1">NAVEEN CARLIN A</span>
+      </div>
+
+      <!-- Subhead with Typewriter and Display Pixel Font matching name -->
+      <div class="pixel-subhead-wrap anim" style="--d: 0.28s;">
+        <span class="pixel-subhead" id="typewriterSubtitle"></span><span class="typewriter-cursor">|</span>
+      </div>
+
+      <p class="desc anim" style="--d: 0.35s; font-size: 1rem; color: rgba(255,255,255,0.7); margin-top: 8px; margin-bottom: 24px;">
+        Building Scalable, Intelligent, and Impactful Systems
+      </p>
+
+      <!-- CTA Group -->
+      <div class="cta-group anim" style="--d: 0.42s;">
+        <a href="about.html" class="cta-work">View my work &rarr;</a>
+        <a href="about.html#terminal" class="cta-connect">Let&rsquo;s connect &nearr;</a>
+        <a href="#" class="cta-resume" download>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          RESUME
+        </a>
+      </div>
+
+    </main>
+
+    <!-- 3. Stats footer -->
+    <footer class="stats-footer">
+
+      <div class="stat-item anim" style="--d: 0.5s;" data-static="true">
+        <div class="stat-icon">&lt;</div>
+        <div class="stat-value">Research @ NIT Trichy</div>
+        <div class="stat-label">AI-Based Path Planning | India's Top NIT</div>
+      </div>
+
+      <div class="stat-item anim" style="--d: 0.58s;" data-target="8" data-suffix="+" data-decimals="0">
+        <div class="stat-icon">%</div>
+        <div class="stat-value">8+</div>
+        <div class="stat-label">Projects Built</div>
+      </div>
+
+      <div class="stat-item anim" style="--d: 0.66s;" data-target="5" data-suffix="x" data-decimals="0">
+        <div class="stat-icon">*</div>
+        <div class="stat-value">5x</div>
+        <div class="stat-label">Award Winner</div>
+      </div>
+
+      <div class="stat-item anim" style="--d: 0.74s;" data-target="25" data-prefix="Top " data-suffix="" data-decimals="0">
+        <div class="stat-icon">#</div>
+        <div class="stat-value">Top 25</div>
+        <div class="stat-label">1.2L+ Submissions — Niral Thiruvizha Hackathon | Govt. of Tamil Nadu</div>
+      </div>
+
+    </footer>
+
+  </div><!-- .page -->
+
+  <script src="main.js"></script>
+</body>
+</html>
