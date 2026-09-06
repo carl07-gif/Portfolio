@@ -1,7 +1,7 @@
 // =============================================================
 // CARL CMS & ADMIN ENGINE (v4.0 - REAL ANALYTICS EDITION)
-// Protected by Secret Double-Tap on Brand Logo & Password: 7777
-// Full CMS: 14 Site Projects, Awards, Experience, Skills, Profile
+// Protected by Secret Double-Tap on Brand Logo & Password: 7065
+// Full CMS: 14 Site Projects, Education/CGPA, Awards, Experience, Skills
 // 100% Real Live Analytics: Zero Mock Data, Isolated Admin Scroll & Top Exit
 // =============================================================
 
@@ -10,7 +10,7 @@
 
   // Live storage key (starts 100% clean and real)
   const STORAGE_KEY = 'carl_cms_data_live_v5';
-  const MASTER_PASSWORD = '7777';
+  const MASTER_PASSWORD = '7065';
 
   // -----------------------------------------------------------
   // 1. Comprehensive Site Data (All 14 Projects & Site Sequences)
@@ -290,6 +290,35 @@
         category: "IoT & Embedded Systems",
         items: ["ESP32", "Arduino", "MQTT", "GSM / GPRS", "Ultrasonic Sensors", "MicroPython", "Telemetry"]
       }
+    ],
+    education: [
+      {
+        id: "edu_be_cse",
+        degree: "B.E. in Computer Science and Engineering",
+        institution: "Mount Zion College of Engineering and Technology",
+        period: "Nov 2023 – Present",
+        score: "CGPA 8.06 / 10",
+        cgpaNum: "8.06",
+        highlights: "Focus on Edge AI, Computer Vision, Distributed & Autonomous Systems"
+      },
+      {
+        id: "edu_class12",
+        degree: "Class 12",
+        institution: "SMMHSS",
+        period: "2021 – 2022",
+        score: "GPA 9.15 / 10",
+        cgpaNum: "9.15",
+        highlights: "Computer Science and Mathematics Stream"
+      },
+      {
+        id: "edu_class10",
+        degree: "Class 10",
+        institution: "SMMHSS",
+        period: "2019 – 2020",
+        score: "GPA 8.78 / 10",
+        cgpaNum: "8.78",
+        highlights: "Secondary School Academic Foundation"
+      }
     ]
   };
 
@@ -318,6 +347,17 @@
       }
       if (!parsed.projects || parsed.projects.length < 14) {
         parsed.projects = DEFAULT_DATA.projects;
+      }
+      if (!parsed.education || !parsed.education.length) {
+        parsed.education = DEFAULT_DATA.education;
+      } else {
+        // Automatically sync any legacy 7.81 or 8.6 values to 8.06
+        parsed.education.forEach(ed => {
+          if (ed.score && (ed.score.includes('7.81') || ed.score.includes('8.6'))) {
+            ed.score = 'CGPA 8.06 / 10';
+            ed.cgpaNum = '8.06';
+          }
+        });
       }
       if (!parsed.analytics) {
         parsed.analytics = { views: 1, resumeDownloads: 0, history: [], visitorLog: [] };
@@ -519,7 +559,7 @@
   }
 
   // -----------------------------------------------------------
-  // 5. Auth Modal (Password: 7777)
+  // 5. Auth Modal (Password: 7065)
   // -----------------------------------------------------------
   function openAuthModal() {
     window.CARL_ADMIN_OPEN = true;
@@ -602,10 +642,10 @@
         setTimeout(() => {
           closeAuthModal();
           openAdminPanel();
-        }, 400);
+        }, 350);
       } else {
         msg.className = 'carl-cms-status-msg error';
-        msg.textContent = 'Access Denied: Incorrect Password';
+        msg.textContent = '✗ Invalid Master Password! Access Denied.';
         card.classList.add('carl-shake');
         setTimeout(() => card.classList.remove('carl-shake'), 400);
         input.value = '';
@@ -684,7 +724,7 @@
             <div class="carl-admin-logo-dot"></div>
             <div>
               <div class="carl-admin-title">NAVEEN CARLIN // ADMIN CMS</div>
-              <div class="carl-admin-subtitle">ENTERPRISE CMS &bull; FULL CONTROL &bull; PASSWORD: 7777</div>
+              <div class="carl-admin-subtitle">ENTERPRISE CMS &bull; FULL CONTROL &bull; PASSWORD: 7065</div>
             </div>
           </div>
           <div class="carl-admin-actions">
@@ -701,6 +741,7 @@
         <nav class="carl-admin-nav">
           <button class="carl-tab-btn active" data-tab="analytics"><i class="fa-solid fa-chart-line"></i> Analytics &amp; Visitors</button>
           <button class="carl-tab-btn" data-tab="projects"><i class="fa-solid fa-code-fork"></i> Manage Projects (14)</button>
+          <button class="carl-tab-btn" data-tab="education"><i class="fa-solid fa-graduation-cap"></i> Education &amp; CGPA</button>
           <button class="carl-tab-btn" data-tab="awards"><i class="fa-solid fa-trophy"></i> Awards</button>
           <button class="carl-tab-btn" data-tab="experience"><i class="fa-solid fa-briefcase"></i> Experience</button>
           <button class="carl-tab-btn" data-tab="skills"><i class="fa-solid fa-layer-group"></i> Skills</button>
@@ -746,7 +787,7 @@ Here is your REAL live Portfolio Analytics Report:
 ${(data.analytics.visitorLog || []).map((v, i) => `${i + 1}. [${v.flag} ${v.city}, ${v.country}] - Org: ${v.org} | Via: ${v.source} | Device: ${v.device} (${v.timeAgo})`).join('\n') || 'No visitors recorded yet.'}
 
 ----------------------------------------
-Admin Access: Double-tap logo on https://carl-portfolio-77777.web.app (Password: 7777)
+Admin Access: Double-tap logo on https://carl-portfolio-77777.web.app (Password: 7065)
 `;
     window.location.href = `mailto:naveencarlin07@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
@@ -765,6 +806,9 @@ Admin Access: Double-tap logo on https://carl-portfolio-77777.web.app (Password:
         break;
       case 'projects':
         renderProjectsTab(container, data);
+        break;
+      case 'education':
+        renderEducationTab(container, data);
         break;
       case 'awards':
         renderAwardsTab(container, data);
@@ -1235,6 +1279,184 @@ Admin Access: Double-tap logo on https://carl-portfolio-77777.web.app (Password:
       syncToDOM();
       modal.style.display = 'none';
       renderTabContent('projects');
+    });
+  }
+
+  // -----------------------------------------------------------
+  // TAB: Education & CGPA
+  // -----------------------------------------------------------
+  function renderEducationTab(el, data) {
+    if (!data.education || !data.education.length) {
+      data.education = DEFAULT_DATA.education;
+    }
+
+    const primaryEdu = data.education[0] || {};
+
+    el.innerHTML = `
+      <div class="carl-section-top">
+        <div>
+          <h3 class="carl-section-title"><i class="fa-solid fa-graduation-cap"></i> Manage Education &amp; CGPA</h3>
+          <p class="carl-section-desc">Full control over academic credentials, institutions, graduation dates, and live CGPA displayed across your portfolio.</p>
+        </div>
+        <button class="carl-btn-primary" id="carlAddEduBtn">
+          <i class="fa-solid fa-plus"></i> Add Education Entry
+        </button>
+      </div>
+
+      <!-- Quick CGPA Metric Banner -->
+      <div class="carl-kpi-grid" style="margin-bottom: 24px;">
+        <div class="carl-kpi-card" style="grid-column: span 2;">
+          <div class="carl-kpi-icon" style="color:#38bdf8;"><i class="fa-solid fa-award"></i></div>
+          <div class="carl-kpi-val" style="color:#38bdf8;" id="carlEduCgpaDisplay">${primaryEdu.cgpaNum || '8.06'}</div>
+          <div class="carl-kpi-label">CURRENT B.E. CGPA (OUT OF 10.0)</div>
+          <span style="font-size:0.78rem; color:rgba(255,255,255,0.6); margin-top:6px; display:block;">
+            ${primaryEdu.institution || 'Mount Zion College of Engineering and Technology'}
+          </span>
+        </div>
+        <div class="carl-kpi-card" style="grid-column: span 2;">
+          <div class="carl-kpi-icon" style="color:#10b981;"><i class="fa-solid fa-building-columns"></i></div>
+          <div class="carl-kpi-val" style="font-size:1.25rem; color:#fff; font-weight:700; margin: 4px 0 8px; line-height:1.3;">
+            ${primaryEdu.degree || 'B.E. in Computer Science and Engineering'}
+          </div>
+          <div class="carl-kpi-label">ACTIVE DEGREE PROGRAM (${primaryEdu.period || 'Nov 2023 – Present'})</div>
+        </div>
+      </div>
+
+      <div class="carl-items-grid">
+        ${data.education.map((edu, idx) => `
+          <div class="carl-item-card">
+            <div class="carl-item-content">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+                <span class="carl-item-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
+                  🎓 ${edu.period || '2023 – Present'}
+                </span>
+                <span style="font-size:0.95rem; color:#10b981; font-weight:800; font-family:monospace; background:rgba(16,185,129,0.12); padding:2px 8px; border-radius:6px; border:1px solid rgba(16,185,129,0.3);">
+                  ${edu.score || 'CGPA 8.06 / 10'}
+                </span>
+              </div>
+              <h4 class="carl-item-title">${edu.degree}</h4>
+              <p style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin:0 0 6px; font-weight:600;">
+                <i class="fa-solid fa-school" style="color:#38bdf8; margin-right:6px;"></i>${edu.institution}
+              </p>
+              ${edu.highlights ? `<p class="carl-item-desc" style="margin-top:4px;">${edu.highlights}</p>` : ''}
+            </div>
+            <div class="carl-item-actions">
+              <button class="carl-btn-icon edit-edu" data-idx="${idx}" title="Edit Education"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="carl-btn-icon delete-edu danger" data-idx="${idx}" title="Delete Education"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Education Edit Modal -->
+      <div class="carl-submodal-overlay" id="carlEduModal" style="display:none;">
+        <div class="carl-submodal-card">
+          <div class="carl-submodal-header">
+            <h4 id="carlEduModalHeading">Add / Edit Education Entry</h4>
+            <button class="carl-cms-close-btn" id="closeEduModalBtn">&times;</button>
+          </div>
+          <form id="carlEduForm" class="carl-form">
+            <input type="hidden" id="eduFormIdx" value="-1" />
+            <div class="carl-form-group">
+              <label>Degree / Qualification *</label>
+              <input type="text" id="eduFormDegree" class="carl-cms-input" required placeholder="e.g. B.E. in Computer Science and Engineering" />
+            </div>
+            <div class="carl-form-group">
+              <label>College / School / Institution *</label>
+              <input type="text" id="eduFormInstitution" class="carl-cms-input" required placeholder="e.g. Mount Zion College of Engineering and Technology" />
+            </div>
+            <div class="carl-form-row">
+              <div class="carl-form-group">
+                <label>Time Period *</label>
+                <input type="text" id="eduFormPeriod" class="carl-cms-input" required placeholder="e.g. Nov 2023 – Present" />
+              </div>
+              <div class="carl-form-group">
+                <label>Score / CGPA Text *</label>
+                <input type="text" id="eduFormScore" class="carl-cms-input" required placeholder="e.g. CGPA 8.06 / 10" />
+              </div>
+            </div>
+            <div class="carl-form-group">
+              <label>Numeric CGPA / GPA (for Counter: e.g. 8.06)</label>
+              <input type="text" id="eduFormCgpaNum" class="carl-cms-input" placeholder="8.06" />
+            </div>
+            <div class="carl-form-group">
+              <label>Highlights / Specialization (Optional)</label>
+              <textarea id="eduFormHighlights" class="carl-cms-input carl-textarea" rows="2" placeholder="e.g. Focus on Edge AI, Computer Vision, High Performance Computing..."></textarea>
+            </div>
+            <div class="carl-form-actions">
+              <button type="button" class="carl-btn-subtle" id="cancelEduModalBtn">Cancel</button>
+              <button type="submit" class="carl-btn-primary">Save Education</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    const modal = el.querySelector('#carlEduModal');
+    const form = el.querySelector('#carlEduForm');
+
+    el.querySelector('#carlAddEduBtn').addEventListener('click', () => {
+      form.reset();
+      el.querySelector('#eduFormIdx').value = '-1';
+      el.querySelector('#carlEduModalHeading').textContent = 'Add New Education Entry';
+      modal.style.display = 'flex';
+    });
+
+    el.querySelector('#closeEduModalBtn').addEventListener('click', () => modal.style.display = 'none');
+    el.querySelector('#cancelEduModalBtn').addEventListener('click', () => modal.style.display = 'none');
+
+    el.querySelectorAll('.edit-edu').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-idx'), 10);
+        const ed = data.education[idx];
+        if (!ed) return;
+        el.querySelector('#eduFormIdx').value = idx;
+        el.querySelector('#eduFormDegree').value = ed.degree || '';
+        el.querySelector('#eduFormInstitution').value = ed.institution || '';
+        el.querySelector('#eduFormPeriod').value = ed.period || '';
+        el.querySelector('#eduFormScore').value = ed.score || '';
+        el.querySelector('#eduFormCgpaNum').value = ed.cgpaNum || '';
+        el.querySelector('#eduFormHighlights').value = ed.highlights || '';
+        el.querySelector('#carlEduModalHeading').textContent = 'Edit Education Entry';
+        modal.style.display = 'flex';
+      });
+    });
+
+    el.querySelectorAll('.delete-edu').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-idx'), 10);
+        if (confirm(`Delete education entry "${data.education[idx].degree}"?`)) {
+          data.education.splice(idx, 1);
+          saveData(data);
+          syncToDOM();
+          renderTabContent('education');
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const idx = parseInt(el.querySelector('#eduFormIdx').value, 10);
+      const newEntry = {
+        id: idx >= 0 ? data.education[idx].id : `edu_${Date.now()}`,
+        degree: el.querySelector('#eduFormDegree').value.trim(),
+        institution: el.querySelector('#eduFormInstitution').value.trim(),
+        period: el.querySelector('#eduFormPeriod').value.trim(),
+        score: el.querySelector('#eduFormScore').value.trim(),
+        cgpaNum: el.querySelector('#eduFormCgpaNum').value.trim() || '8.06',
+        highlights: el.querySelector('#eduFormHighlights').value.trim()
+      };
+
+      if (idx >= 0) {
+        data.education[idx] = newEntry;
+      } else {
+        data.education.push(newEntry);
+      }
+
+      saveData(data);
+      syncToDOM();
+      modal.style.display = 'none';
+      renderTabContent('education');
     });
   }
 
@@ -1788,6 +2010,43 @@ Admin Access: Double-tap logo on https://carl-portfolio-77777.web.app (Password:
 
     if (window.CARL_TYPEWRITER_WORDS && Array.isArray(data.profile.typewriterPhrases)) {
       window.CARL_TYPEWRITER_WORDS = data.profile.typewriterPhrases;
+    }
+
+    // Sync Education & CGPA
+    if (data.education && data.education.length) {
+      const primary = data.education[0];
+      const cgpa = primary.cgpaNum || '8.06';
+
+      // Update bento card
+      const cgpaValEl = document.getElementById('cgpaVal');
+      if (cgpaValEl) {
+        cgpaValEl.setAttribute('data-counter', cgpa);
+        cgpaValEl.textContent = parseFloat(cgpa).toFixed(2);
+      }
+      const bentoPill = document.querySelector('.bento-card-academics .bento-status-pill span:last-child');
+      if (bentoPill) {
+        bentoPill.textContent = `${cgpa} CGPA`;
+      }
+
+      // Update Education list in about.html
+      const eduList = document.querySelector('.edu-cert-card:first-child .edu-cert-list');
+      if (eduList) {
+        eduList.innerHTML = data.education.map(ed => `
+          <div class="edu-cert-item">
+            <div class="edu-cert-icon-wrap">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="edu-item-connector">
+              <div class="edu-item-connector-fill"></div>
+            </div>
+            <div class="edu-cert-info">
+              <h3 class="edu-cert-title">${ed.degree}</h3>
+              <span class="edu-cert-provider">${ed.institution}</span>
+              <span class="edu-cert-meta">${ed.period} &middot; ${ed.score}</span>
+            </div>
+          </div>
+        `).join('');
+      }
     }
 
     const bentoGrid = document.querySelector('.proj-bento-grid');
