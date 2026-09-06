@@ -641,7 +641,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let triggered = false;
     let wheelAccum = 0;
 
+    function isModalOrAdminActive(e) {
+      if (window.CARL_ADMIN_OPEN) return true;
+      if (document.body.style.overflow === 'hidden' || document.documentElement.style.overflow === 'hidden') return true;
+      const admin = document.getElementById('carlAdminPanel');
+      const auth = document.getElementById('carlAuthModal');
+      if (admin && (admin.classList.contains('active') || admin.getAttribute('aria-hidden') === 'false')) return true;
+      if (auth && (auth.classList.contains('active') || auth.getAttribute('aria-hidden') === 'false')) return true;
+      if (e && e.target && e.target.closest && e.target.closest('#carlAdminPanel, #carlAuthModal, .carl-admin-overlay, .carl-cms-modal-overlay, .carl-admin-container')) {
+        return true;
+      }
+      return false;
+    }
+
     window.addEventListener('wheel', (e) => {
+      if (isModalOrAdminActive(e)) {
+        wheelAccum = 0;
+        return;
+      }
       if (triggered) return;
       if (e.deltaY > 0) {
         wheelAccum += e.deltaY;
@@ -654,15 +671,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
+      if (isModalOrAdminActive(e)) return;
       if (e.touches && e.touches[0]) {
         touchStartY = e.touches[0].clientY;
       }
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
+      if (isModalOrAdminActive(e)) return;
       if (triggered) return;
       // Do not trigger page transition if user is touching a link, button, or control
-      if (e.target && e.target.closest && e.target.closest('a, button, input, select, textarea, .resume-btn, .cta-resume')) {
+      if (e.target && e.target.closest && e.target.closest('a, button, input, select, textarea, .resume-btn, .cta-resume, #carlAdminPanel, #carlAuthModal, .carl-admin-overlay, .carl-cms-modal-overlay')) {
         return;
       }
       if (e.changedTouches && e.changedTouches[0] && (touchStartY - e.changedTouches[0].clientY > 50)) {

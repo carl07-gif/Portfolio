@@ -151,6 +151,7 @@
   -webkit-backdrop-filter: blur(28px);
   z-index: 1000000;
   overflow-y: auto;
+  overscroll-behavior: contain;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.28s ease;
@@ -249,6 +250,62 @@
   background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
   color: #ef4444;
+}
+
+/* Prominent Top Exit Button */
+.carl-btn-exit-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(185, 28, 28, 0.38));
+  border: 1.5px solid rgba(239, 68, 68, 0.7);
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.25);
+  text-transform: uppercase;
+}
+
+.carl-btn-exit-top:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border-color: #ef4444;
+  box-shadow: 0 6px 24px rgba(239, 68, 68, 0.55);
+  transform: translateY(-1px);
+}
+
+.carl-btn-exit-top:active {
+  transform: translateY(0);
+}
+
+/* Real Live Tracking Banner */
+.carl-live-indicator-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #10b981;
+  margin-bottom: 20px;
+}
+
+.live-dot-green {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulseDot 1.6s infinite ease-in-out;
 }
 
 /* Nav Tabs */
